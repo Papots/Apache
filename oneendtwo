@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "@@@@@@@@@@@@@@@@"
+echo "Installing HTTPD"
+echo "@@@@@@@@@@@@@@@@"
+
+yum install -y httpd
+
+echo "@@@@@@@@@@@@@@@"
+echo "Starting HTTPD"
+echo "@@@@@@@@@@@@@@@"
+
+systemctl start httpd
+
+echo "@@@@@@@@@@@@@@@@"
+echo "Adding Firewall"
+echo "@@@@@@@@@@@@@@@@"
+
+firewall-cmd --add-port 80/tcp --permanent
+firewall-cmd --add-port 443/tcp --permanent
+
+firewall-cmd --reload
+systemctl enable httpd.service
+
+yum install -y php php-mysql
+
+systemctl restart httpd.service
+
+yum info php-fpm
+yum install -y php-fpm
+
+cd /var/www/html
+cat > info.php <<- EOF
+<?php phpinfo(); ?>
+EOF
